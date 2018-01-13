@@ -77,7 +77,8 @@ export default class DropzoneS3Uploader extends React.Component {
         file: {},
       })
     }
-    this.state = {uploadedFiles}
+    const uploaders = {};
+    this.state = {uploadedFiles, uploaders};
   }
 
   componentWillMount = () => this.setUploaderOptions(this.props)
@@ -115,7 +116,10 @@ export default class DropzoneS3Uploader extends React.Component {
 
     const uploadedFiles = this.state.uploadedFiles
     uploadedFiles.push(uploadedFile)
-    this.setState({uploadedFiles, error: null, progress: null}, () => {
+    const { uploaders } = this.state;
+    const newUploaders = Object.assign({}, uploaders);
+    delete newUploaders[file.name];
+    this.setState({uploadedFiles, uploaders: newUploaders, error: null, progress: null}, () => {
       this.props.onFinish && this.props.onFinish(uploadedFile)
     })
   }
@@ -126,8 +130,21 @@ export default class DropzoneS3Uploader extends React.Component {
       files,
       ...this.state.uploaderOptions,
     }
-    new S3Upload(options) // eslint-disable-line
-    this.props.onDrop && this.props.onDrop(files, rejectedFiles)
+    const { uploaders } = this.state;
+    const newUploaders = Object.assign({}, uploaders);
+    const uploader = new S3Upload(options); // eslint-disable-line
+    files.forEach(function(file) {
+      newUploaders[file.name] = uploader;
+    });
+    this.setState({ uploaders: newUploaders });
+    this.props.onDrop && this.props.onDrop(files, rejectedFiles);
+  }
+
+  abort = (filename) => {
+    const { uploaders } = this.state;
+    uploaders[filename] && uploaders[filename].abortUpload();
+    delete uploaders[filename];
+    this.setState( { uploaders });
   }
 
   fileUrl = (s3Url, filename) => `${s3Url.endsWith('/') ? s3Url.slice(0, -1) : s3Url}/${filename}`

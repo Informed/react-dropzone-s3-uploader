@@ -19,7 +19,7 @@
     "test": "eval $(cat test/.env) mocha test/**/*.tests.js"
   },
   "dependencies": {
-    "prop-types": "^15.5.8",
+    "prop-types": "^15.7.2",
     "react-dropzone": "^4.0.0",
     "react-s3-uploader": "https://github.com/Informed/react-s3-uploader.git"
   },

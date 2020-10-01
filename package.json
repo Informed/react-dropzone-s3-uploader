@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "prop-types": "^15.5.8",
-    "react-dropzone": "^4.0.0",
+    "react-dropzone": "^4.3.0",
     "react-s3-uploader": "https://github.com/Informed/react-s3-uploader.git"
   },
   "devDependencies": {
